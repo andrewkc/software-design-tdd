@@ -1,0 +1,142 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\alexd\Desktop\SOFT\Proyecto\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alexd\Desktop\SOFT\Proyecto
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 15 items
+
+tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha PASSED [  6%]
+tests/test_validacion.py::test_tres_dias_antes_es_proximo PASSED         [ 13%]
+tests/test_validacion.py::test_un_dia_antes_es_proximo PASSED            [ 20%]
+tests/test_validacion.py::test_vence_hoy PASSED                          [ 26%]
+tests/test_validacion.py::test_fecha_pasada_es_vencido PASSED            [ 33%]
+tests/test_validacion.py::test_lote_deteriorado_queda_bloqueado PASSED   [ 40%]
+tests/test_validacion.py::test_lote_marcado_bloqueado_queda_bloqueado PASSED [ 46%]
+tests/test_validacion.py::test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento PASSED [ 53%]
+tests/test_validacion.py::test_perecible_sin_fecha_registrada PASSED     [ 60%]
+tests/test_validacion.py::test_producto_sin_fecha_aplicable_es_normal PASSED [ 66%]
+tests/test_validacion.py::test_venta_valida_no_lanza_error FAILED        [ 73%]
+tests/test_validacion.py::test_cantidad_cero_es_rechazada FAILED         [ 80%]
+tests/test_validacion.py::test_cantidad_negativa_es_rechazada FAILED     [ 86%]
+tests/test_validacion.py::test_cantidad_mayor_al_stock_es_rechazada FAILED [ 93%]
+tests/test_validacion.py::test_cantidad_igual_al_stock_es_aceptada FAILED [100%]
+
+================================== FAILURES ===================================
+______________________ test_venta_valida_no_lanza_error _______________________
+
+    def test_venta_valida_no_lanza_error():
+>       assert validar_venta(lote_vendible(), 2, HOY) is None
+
+tests\test_validacion.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+cantidad = 2, fecha_venta = datetime.date(2026, 10, 1), revision_hoy = False
+
+    def validar_venta(
+        lote: dict,
+        cantidad: int,
+        fecha_venta: date,
+        revision_hoy: bool = False,
+    ) -> None:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:77: NotImplementedError
+_______________________ test_cantidad_cero_es_rechazada _______________________
+
+    def test_cantidad_cero_es_rechazada():
+        with pytest.raises(ValueError, match="cantidad"):
+>           validar_venta(lote_vendible(), 0, HOY)
+
+tests\test_validacion.py:146: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+cantidad = 0, fecha_venta = datetime.date(2026, 10, 1), revision_hoy = False
+
+    def validar_venta(
+        lote: dict,
+        cantidad: int,
+        fecha_venta: date,
+        revision_hoy: bool = False,
+    ) -> None:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:77: NotImplementedError
+_____________________ test_cantidad_negativa_es_rechazada _____________________
+
+    def test_cantidad_negativa_es_rechazada():
+        with pytest.raises(ValueError, match="cantidad"):
+>           validar_venta(lote_vendible(), -1, HOY)
+
+tests\test_validacion.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+cantidad = -1, fecha_venta = datetime.date(2026, 10, 1), revision_hoy = False
+
+    def validar_venta(
+        lote: dict,
+        cantidad: int,
+        fecha_venta: date,
+        revision_hoy: bool = False,
+    ) -> None:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:77: NotImplementedError
+__________________ test_cantidad_mayor_al_stock_es_rechazada __________________
+
+    def test_cantidad_mayor_al_stock_es_rechazada():
+        with pytest.raises(ValueError, match="stock"):
+>           validar_venta(lote_vendible(stock=5), 6, HOY)
+
+tests\test_validacion.py:156: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+cantidad = 6, fecha_venta = datetime.date(2026, 10, 1), revision_hoy = False
+
+    def validar_venta(
+        lote: dict,
+        cantidad: int,
+        fecha_venta: date,
+        revision_hoy: bool = False,
+    ) -> None:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:77: NotImplementedError
+__________________ test_cantidad_igual_al_stock_es_aceptada ___________________
+
+    def test_cantidad_igual_al_stock_es_aceptada():
+        # Frontera: vender todo el lote es valido.
+>       assert validar_venta(lote_vendible(stock=5), 5, HOY) is None
+
+tests\test_validacion.py:161: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+cantidad = 5, fecha_venta = datetime.date(2026, 10, 1), revision_hoy = False
+
+    def validar_venta(
+        lote: dict,
+        cantidad: int,
+        fecha_venta: date,
+        revision_hoy: bool = False,
+    ) -> None:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:77: NotImplementedError
+=========================== short test summary info ===========================
+FAILED tests/test_validacion.py::test_venta_valida_no_lanza_error - NotImplem...
+FAILED tests/test_validacion.py::test_cantidad_cero_es_rechazada - NotImpleme...
+FAILED tests/test_validacion.py::test_cantidad_negativa_es_rechazada - NotImp...
+FAILED tests/test_validacion.py::test_cantidad_mayor_al_stock_es_rechazada - ...
+FAILED tests/test_validacion.py::test_cantidad_igual_al_stock_es_aceptada - N...
+======================== 5 failed, 10 passed in 0.21s =========================

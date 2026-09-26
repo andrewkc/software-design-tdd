@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\alexd\Desktop\SOFT\Proyecto\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alexd\Desktop\SOFT\Proyecto
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 5 items
+
+tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha PASSED [ 20%]
+tests/test_validacion.py::test_tres_dias_antes_es_proximo PASSED         [ 40%]
+tests/test_validacion.py::test_un_dia_antes_es_proximo PASSED            [ 60%]
+tests/test_validacion.py::test_vence_hoy PASSED                          [ 80%]
+tests/test_validacion.py::test_fecha_pasada_es_vencido PASSED            [100%]
+
+============================== 5 passed in 0.03s ==============================

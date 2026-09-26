@@ -1,0 +1,21 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\alexd\Desktop\SOFT\Proyecto\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alexd\Desktop\SOFT\Proyecto
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 10 items
+
+tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha PASSED [ 10%]
+tests/test_validacion.py::test_tres_dias_antes_es_proximo PASSED         [ 20%]
+tests/test_validacion.py::test_un_dia_antes_es_proximo PASSED            [ 30%]
+tests/test_validacion.py::test_vence_hoy PASSED                          [ 40%]
+tests/test_validacion.py::test_fecha_pasada_es_vencido PASSED            [ 50%]
+tests/test_validacion.py::test_lote_deteriorado_queda_bloqueado PASSED   [ 60%]
+tests/test_validacion.py::test_lote_marcado_bloqueado_queda_bloqueado PASSED [ 70%]
+tests/test_validacion.py::test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento PASSED [ 80%]
+tests/test_validacion.py::test_perecible_sin_fecha_registrada PASSED     [ 90%]
+tests/test_validacion.py::test_producto_sin_fecha_aplicable_es_normal PASSED [100%]
+
+============================= 10 passed in 0.03s ==============================

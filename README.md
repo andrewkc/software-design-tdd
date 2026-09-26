@@ -1,59 +1,37 @@
-﻿# CU-05: precio de venta desde un lote
+# CU-05: registrar una venta desde un lote
 
-Trabajo de **persona-2**, rama `persona-2`, para el laboratorio de Diseño de Software. Esta entrega implementa la selección de precio de una venta: utiliza el precio de una promoción solo si está aprobada, activa y vigente en la fecha de venta.
+Trabajo del Grupo 2 para demostrar TDD sobre una parte acotada del caso de uso CU-05. El flujo valida el lote, obtiene el precio aplicable y registra un movimiento con el stock resultante.
 
-## Alcance de esta entrega
+## Contrato
 
-- `src/precios.py`: función `precio_aplicado`.
-- `tests/test_precios.py`: cinco pruebas unitarias.
-- `docs/README.md`: explicación del módulo y registro de su ciclo TDD.
+- Las fechas son objetos `datetime.date`.
+- Los precios son enteros en centavos (`1000` representa S/ 10,00).
+- Los lotes bloqueados, deteriorados, vencidos o sin fecha requerida no se venden. Un lote que vence hoy requiere `revision_hoy=True`.
+- Una promoción solo aplica si está aprobada, activa y vigente.
+- Los movimientos producen un nuevo diccionario de lote; no modifican el original.
 
-La función recibe importes enteros en centavos (`1000` representa S/ 10,00) y fechas `datetime.date`. Esta parte no registra ventas ni modifica lotes. La integración con validación y movimientos corresponde a una etapa posterior del trabajo grupal.
+## Módulos
 
-## Ejecutar las pruebas
+- `src/validacion.py`: estado del lote y validación de la venta.
+- `src/precios.py`: selección del precio promocional o regular.
+- `src/movimientos.py`: cálculo del nuevo stock y registro del movimiento.
+- `src/venta.py`: integración de validación, precio y movimiento.
 
-Con Python y pytest instalados, desde la raíz del repositorio:
+## Ejecutar
 
-```bash
-python -m pytest tests/test_precios.py
-```
-
-## Ejemplo
-
-```python
-from datetime import date
-from src.precios import precio_aplicado
-
-promocion = {
-    "precio_centavos": 800,
-    "inicio": date(2026, 9, 25),
-    "fin": date(2026, 9, 30),
-    "activa": True,
-    "aprobada": True,
-}
-
-precio = precio_aplicado(1000, promocion, date(2026, 9, 27))
-# precio == 800 (S/ 8,00)
-```
-
-El contrato y la evidencia del ciclo están en [docs/README.md](docs/README.md).
-
-## Ejecucion de pruebas
-
-Instalar pytest si el entorno aun no lo tiene:
+Instala pytest si hace falta y, desde la raíz del repositorio, ejecuta la suite:
 
 ```bash
 python -m pip install pytest
+python -m pytest -q
 ```
 
-Ejecutar las pruebas de persona 2:
+## Alcance
 
-```bash
-python -m pytest tests/test_precios.py
-```
+La demostración es en memoria. No incluye persistencia, ventas con varios productos o lotes, concurrencia, permisos, cancelaciones ni registro de mermas. No representa la implementación completa de CU-05.
 
-Resultado verificado en esta rama:
+## Documentación
 
-```text
-5 passed
-```
+- [Registro TDD y módulos](docs/README.md)
+- [Ciclo de validación de persona 1](docs/persona-1-validacion.md)
+- [Evidencias](docs/evidencias.md)
