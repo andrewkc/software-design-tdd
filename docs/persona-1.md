@@ -38,7 +38,7 @@ lote deteriorado.** Como el bloqueo se evalúa antes que la fecha, un
 lote deteriorado que además vence hoy sale como `BLOQUEADO`, y
 `revision_hoy=True` no cambia nada. Está cubierto por la prueba 4.7.
 
-## 3. Decisiones de diseño que puedo defender
+## 3. Decisiones de diseño del equipo
 
 **`validar_venta` reutiliza `estado_lote` en vez de repetir las
 condiciones.** Si mañana el equipo cambia la ventana de alerta o agrega

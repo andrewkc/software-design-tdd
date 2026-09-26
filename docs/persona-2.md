@@ -32,7 +32,7 @@ El refactor extrajo `_promocion_vigente` para separar la regla de vigencia de la
 | GREEN | `ca07f82` | 4 pruebas pasaron. |
 | REFACTOR | `5329724` | 4 pruebas pasaron tras hacer explícitos los argumentos entre módulos. |
 
-Los extractos de salida están en [persona-3.md](persona-3.md) y en `docs/evidencias/ciclo-4-*.txt`.
+Los extractos de salida están en `docs/evidencias/ciclo-4-red.txt`, `ciclo-4-green.txt` y `ciclo-4-refactor.txt`.
 
 ## Ejecutar la suite integrada
 
@@ -40,5 +40,5 @@ Los extractos de salida están en [persona-3.md](persona-3.md) y en `docs/eviden
 python -m pytest -p no:cacheprovider -q
 ```
 
-La documentación de validación está en [persona-1.md](persona-1.md). Las evidencias de los ciclos 1 a 3 se conservan en [evidencias.md](persona-3.md).
+La documentación de validación está en [persona-1.md](persona-1.md). El conjunto de ciclos y resultados se reúne en [evidencias.md](evidencias.md); el ciclo de movimientos se detalla en [persona-3.md](persona-3.md).
 

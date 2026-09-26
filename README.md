@@ -1,49 +1,65 @@
-# CU-05: registrar una venta desde un lote
+# TDD aplicado al registro de ventas en bodegas
 
-Trabajo del Grupo 2 para demostrar TDD sobre una parte acotada del caso de uso CU-05. El flujo valida el lote, obtiene el precio aplicable y registra un movimiento con el stock resultante.
+Trabajo del Grupo 2 del curso Diseño de Software. Aplicamos **Test-Driven Development (TDD)** a una parte de CU-05 del proyecto de bodegas: confirmar la venta de un producto desde un lote.
 
-## Flujo
+## Integrantes
 
-`registrar_venta` ejecuta las operaciones en este orden:
+- Diaz Ysla, Walter Alexander
+- Champi Hinojosa, Miguel Angel
+- Cahuana Condori, Kelvin Andreí
 
-1. `validar_venta` verifica cantidad, stock, vencimiento y estado del lote.
-2. `precio_aplicado` selecciona el precio promocional vigente o el regular.
-3. `crear_movimiento` devuelve un lote nuevo y el movimiento de salida.
+## Problema y alcance
 
-Si la validación rechaza la venta, no se calcula el precio ni se crea un movimiento. El lote original no se modifica.
+Antes de registrar una salida por venta comprobamos la cantidad solicitada, el stock y el estado del lote. Después seleccionamos el precio regular o una promoción aprobada y vigente. La operación devuelve un lote nuevo con el stock reducido una sola vez y un movimiento con responsable, cantidad, precio y total. Si la validación falla, el lote original permanece intacto.
 
-## Contrato
+Esta implementación es una demostración en memoria de una venta de un producto desde un lote. No incluye base de datos, múltiples productos o lotes por venta, permisos, concurrencia, cancelaciones ni mermas. No cubre todo CU-05.
 
-- Las fechas son objetos `datetime.date`.
-- Los precios son enteros en centavos (`1000` representa S/ 10,00).
-- Un lote deteriorado, bloqueado, vencido o perecible sin fecha no se vende.
-- Un lote que vence el día de la venta requiere `revision_hoy=True`; esta marca registra una revisión humana, no certifica inocuidad.
-- Una promoción solo aplica si está aprobada, activa y vigente en el intervalo inclusivo `inicio <= fecha_venta <= fin`.
-- El movimiento descuenta la cantidad exactamente una vez y conserva el lote original.
+## Metodología y tecnologías
 
-## Módulos
+Usamos Python 3.10 o superior, pytest y Git. Organizamos el trabajo en ciclos **RED → GREEN → REFACTOR**: primero definimos un comportamiento mediante una prueba, después escribimos el código necesario para pasarla y finalmente mejoramos el diseño con la suite en verde. Los cuatro módulos separan validación, selección de precio, movimiento e integración.
 
-- `src/validacion.py`: estado del lote y validación de la venta.
-- `src/precios.py`: selección del precio promocional o regular.
-- `src/movimientos.py`: cálculo del nuevo stock y registro del movimiento.
-- `src/venta.py`: integración de validación, precio y movimiento.
+| Módulo | Responsabilidad |
+| --- | --- |
+| `src/validacion.py` | Determinar el estado del lote y rechazar ventas inválidas. |
+| `src/precios.py` | Seleccionar el precio aplicable. |
+| `src/movimientos.py` | Devolver el nuevo lote y el movimiento de salida. |
+| `src/venta.py` | Ejecutar validación, precio y movimiento en ese orden. |
+
+Las fechas son objetos `datetime.date` y los importes son enteros en centavos. `1000` representa S/ 10,00. El [contrato técnico](docs/contrato.md) reúne las entradas, salidas y reglas compartidas.
+
+## Instalación
+
+Desde la raíz del repositorio:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+En macOS o Linux, el entorno se activa con `source .venv/bin/activate`. También es posible instalar la dependencia directamente con `python -m pip install -r requirements.txt`.
+
+## Ejecución
+
+La demostración muestra una venta promocional aceptada y una venta rechazada por deterioro:
+
+```powershell
+python demo.py
+```
+
+En la primera operación el stock pasa de 5 a 3 y el total es S/ 16,00. En la segunda se muestra el motivo del rechazo y el stock sigue en 5.
 
 ## Pruebas
 
-La suite contiene 34 pruebas unitarias y de integración.
-
 ```powershell
-python -m pip install pytest
 python -m pytest -p no:cacheprovider -q
 ```
 
-## Alcance
+La suite integrada contiene **34 pruebas**: 23 de validación, 5 de precios, 2 de movimientos y 4 de integración. Incluye casos normales, límites y errores. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
 
-La demostración es en memoria. No incluye persistencia, ventas con varios productos o lotes, concurrencia, permisos, cancelaciones ni registro de mermas. No representa la implementación completa de CU-05.
+## Documentación y evidencias
 
-## Documentación
-
-- [Ciclo 1: Validación](docs/persona-1.md)
-- [Ciclo 2: Precio promocional](docs/persona-2.md)
-- [Ciclo 3: Movimientos](docs/persona-3.md)
-- [Ciclo 4: Integración de la venta](docs/persona-2.md)
+- [Evidencias TDD y resultados](docs/evidencias.md)
+- [Contrato técnico](docs/contrato.md)
+- [Conclusiones del equipo](docs/conclusiones.md)
+- [Validación](docs/persona-1.md), [precios e integración](docs/persona-2.md) y [movimientos](docs/persona-3.md)
