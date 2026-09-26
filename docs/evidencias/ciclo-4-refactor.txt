@@ -1,0 +1,9 @@
+Comando: python -m pytest -q tests/test_venta.py
+
+Resultado real después de refactorizar las llamadas con argumentos nombrados:
+
+4 passed, 2 warnings in 0.02s
+
+Las advertencias corresponden a la falta de permisos de escritura en .pytest_cache.
+
+Commit REFACTOR: 5329724 TDD REFACTOR: clarify sale orchestration

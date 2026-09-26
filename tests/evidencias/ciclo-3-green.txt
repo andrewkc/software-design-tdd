@@ -1,0 +1,26 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\alexd\Desktop\SOFT\Proyecto\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alexd\Desktop\SOFT\Proyecto
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 15 items
+
+tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha PASSED [  6%]
+tests/test_validacion.py::test_tres_dias_antes_es_proximo PASSED         [ 13%]
+tests/test_validacion.py::test_un_dia_antes_es_proximo PASSED            [ 20%]
+tests/test_validacion.py::test_vence_hoy PASSED                          [ 26%]
+tests/test_validacion.py::test_fecha_pasada_es_vencido PASSED            [ 33%]
+tests/test_validacion.py::test_lote_deteriorado_queda_bloqueado PASSED   [ 40%]
+tests/test_validacion.py::test_lote_marcado_bloqueado_queda_bloqueado PASSED [ 46%]
+tests/test_validacion.py::test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento PASSED [ 53%]
+tests/test_validacion.py::test_perecible_sin_fecha_registrada PASSED     [ 60%]
+tests/test_validacion.py::test_producto_sin_fecha_aplicable_es_normal PASSED [ 66%]
+tests/test_validacion.py::test_venta_valida_no_lanza_error PASSED        [ 73%]
+tests/test_validacion.py::test_cantidad_cero_es_rechazada PASSED         [ 80%]
+tests/test_validacion.py::test_cantidad_negativa_es_rechazada PASSED     [ 86%]
+tests/test_validacion.py::test_cantidad_mayor_al_stock_es_rechazada PASSED [ 93%]
+tests/test_validacion.py::test_cantidad_igual_al_stock_es_aceptada PASSED [100%]
+
+============================= 15 passed in 0.04s ==============================

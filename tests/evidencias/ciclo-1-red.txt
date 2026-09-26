@@ -1,0 +1,108 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\alexd\Desktop\SOFT\Proyecto\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alexd\Desktop\SOFT\Proyecto
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 5 items
+
+tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha FAILED [ 20%]
+tests/test_validacion.py::test_tres_dias_antes_es_proximo FAILED         [ 40%]
+tests/test_validacion.py::test_un_dia_antes_es_proximo FAILED            [ 60%]
+tests/test_validacion.py::test_vence_hoy FAILED                          [ 80%]
+tests/test_validacion.py::test_fecha_pasada_es_vencido FAILED            [100%]
+
+================================== FAILURES ===================================
+_______________ test_fecha_lejana_es_normal_y_muestra_la_fecha ________________
+
+    def test_fecha_lejana_es_normal_y_muestra_la_fecha():
+        # Fuera de la ventana de alerta de 3 dias acordada por el equipo.
+>       estado, texto = estado_lote(
+            lote(vence=HOY + timedelta(days=10)), HOY
+        )
+
+tests\test_validacion.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:19: NotImplementedError
+_______________________ test_tres_dias_antes_es_proximo _______________________
+
+    def test_tres_dias_antes_es_proximo():
+>       estado, texto = estado_lote(lote(vence=HOY + timedelta(days=3)), HOY)
+
+tests\test_validacion.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:19: NotImplementedError
+________________________ test_un_dia_antes_es_proximo _________________________
+
+    def test_un_dia_antes_es_proximo():
+        # El acuerdo fija el texto como "Vence en X días", sin distinguir
+        # el singular. Se respeta tal cual para no romper la integracion.
+>       estado, texto = estado_lote(lote(vence=HOY + timedelta(days=1)), HOY)
+
+tests\test_validacion.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:19: NotImplementedError
+_______________________________ test_vence_hoy ________________________________
+
+    def test_vence_hoy():
+>       estado, texto = estado_lote(lote(vence=HOY), HOY)
+
+tests\test_validacion.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:19: NotImplementedError
+________________________ test_fecha_pasada_es_vencido _________________________
+
+    def test_fecha_pasada_es_vencido():
+>       estado, texto = estado_lote(lote(vence=HOY - timedelta(days=1)), HOY)
+
+tests\test_validacion.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
+>       raise NotImplementedError("Pendiente de implementar")
+E       NotImplementedError: Pendiente de implementar
+
+src\validacion.py:19: NotImplementedError
+=========================== short test summary info ===========================
+FAILED tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha
+FAILED tests/test_validacion.py::test_tres_dias_antes_es_proximo - NotImpleme...
+FAILED tests/test_validacion.py::test_un_dia_antes_es_proximo - NotImplemente...
+FAILED tests/test_validacion.py::test_vence_hoy - NotImplementedError: Pendie...
+FAILED tests/test_validacion.py::test_fecha_pasada_es_vencido - NotImplemente...
+============================== 5 failed in 0.11s ==============================
