@@ -74,4 +74,10 @@ def validar_venta(
     fecha_venta: date,
     revision_hoy: bool = False,
 ) -> None:
-    raise NotImplementedError("Pendiente de implementar")
+    if cantidad <= 0:
+        raise ValueError("La cantidad debe ser mayor que cero")
+
+    if cantidad > lote["stock"]:
+        raise ValueError(
+            f"Stock insuficiente: hay {lote['stock']} y se piden {cantidad}"
+        )
