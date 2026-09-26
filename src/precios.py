@@ -14,7 +14,7 @@ def precio_aplicado(
     promocion: dict | None,
     fecha_venta: date,
 ) -> int:
-    """Devuelve el precio promocional vigente o el precio regular, en centavos."""
+    
     if promocion is not None and _promocion_vigente(promocion, fecha_venta):
         return promocion["precio_centavos"]
 

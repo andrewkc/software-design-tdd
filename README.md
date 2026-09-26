@@ -43,6 +43,7 @@ La demostración es en memoria. No incluye persistencia, ventas con varios produ
 
 ## Documentación
 
-- [Registro TDD y módulos](docs/README.md)
-- [Ciclo de validación de persona 1](docs/persona-1-validacion.md)
-- [Evidencias](docs/evidencias.md)
+- [Ciclo 1: Validación](docs/persona-1.md)
+- [Ciclo 2: Precio promocional](docs/persona-2.md)
+- [Ciclo 3: Movimientos](docs/persona-3.md)
+- [Ciclo 4: Integración de la venta](docs/persona-2.md)
