@@ -14,10 +14,20 @@ def registrar_venta(
     responsable: str,
     revision_hoy: bool = False,
 ) -> tuple[dict, dict]:
-    validar_venta(lote, cantidad, fecha_venta, revision_hoy)
+    validar_venta(
+        lote=lote,
+        cantidad=cantidad,
+        fecha_venta=fecha_venta,
+        revision_hoy=revision_hoy,
+    )
     precio_unitario_centavos = precio_aplicado(
-        precio_regular_centavos, promocion, fecha_venta
+        precio_regular_centavos=precio_regular_centavos,
+        promocion=promocion,
+        fecha_venta=fecha_venta,
     )
     return crear_movimiento(
-        lote, cantidad, precio_unitario_centavos, responsable
+        lote=lote,
+        cantidad=cantidad,
+        precio_unitario_centavos=precio_unitario_centavos,
+        responsable=responsable,
     )
