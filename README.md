@@ -35,3 +35,4 @@ La demostración es en memoria. No incluye persistencia, ventas con varios produ
 - [Registro TDD y módulos](docs/README.md)
 - [Ciclo de validación de persona 1](docs/persona-1-validacion.md)
 - [Evidencias](docs/evidencias.md)
+La función `registrar_venta` se incorporará en el ciclo 4, después de integrar validación, precio y movimiento.
