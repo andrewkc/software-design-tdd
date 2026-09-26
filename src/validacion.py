@@ -27,6 +27,16 @@ def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
 
 
 def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
+    # Los bloqueos del personal tienen prioridad sobre la fecha.
+    if lote["deteriorado"] or lote["bloqueado"]:
+        return "BLOQUEADO", "En observación: revisar y retirar de la venta"
+
+    if lote["vence"] is None:
+        if lote["perecible"]:
+            return "SIN_FECHA", "Fecha sin verificar: revisar lote"
+
+        return "NORMAL", "Fecha no aplicable"
+
     dias = _dias_hasta_vencimiento(lote, fecha_actual)
 
     if dias < 0:
