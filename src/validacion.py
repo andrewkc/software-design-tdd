@@ -16,4 +16,15 @@ from datetime import date
 
 
 def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
-    raise NotImplementedError("Pendiente de implementar")
+    dias = (lote["vence"] - fecha_actual).days
+
+    if dias < 0:
+        return "VENCIDO", "Vencido: retirar de la venta"
+
+    if dias == 0:
+        return "HOY", "Vence hoy: revisar antes de vender"
+
+    if dias <= 3:
+        return "PROXIMO", f"Vence en {dias} días: revisar lote"
+
+    return "NORMAL", f"Vence el {lote['vence'].strftime('%d/%m/%Y')}"
