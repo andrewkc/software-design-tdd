@@ -14,9 +14,20 @@ from __future__ import annotations
 
 from datetime import date
 
+# Decision del equipo para este prototipo (seccion 3 del acuerdo).
+# No representa una garantia sanitaria: si el equipo la cambia, se
+# actualiza aqui y en el acuerdo.
+DIAS_VENTANA_ALERTA = 3
+
+FORMATO_FECHA = "%d/%m/%Y"
+
+
+def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
+    return (lote["vence"] - fecha_actual).days
+
 
 def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
-    dias = (lote["vence"] - fecha_actual).days
+    dias = _dias_hasta_vencimiento(lote, fecha_actual)
 
     if dias < 0:
         return "VENCIDO", "Vencido: retirar de la venta"
@@ -24,7 +35,7 @@ def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
     if dias == 0:
         return "HOY", "Vence hoy: revisar antes de vender"
 
-    if dias <= 3:
+    if dias <= DIAS_VENTANA_ALERTA:
         return "PROXIMO", f"Vence en {dias} días: revisar lote"
 
-    return "NORMAL", f"Vence el {lote['vence'].strftime('%d/%m/%Y')}"
+    return "NORMAL", f"Vence el {lote['vence'].strftime(FORMATO_FECHA)}"
