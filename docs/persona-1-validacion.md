@@ -102,21 +102,26 @@ alguien que la cambie lo va a leer.
 git log --oneline --reverse
 ```
 
+Cada ciclo dejó tres commits consecutivos, y el verbo indica el paso:
+**Crear pruebas** es RED, **Implementar** es GREEN y **Refactorizar**
+es REFACTOR.
+
 | Ciclo | RED | GREEN | REFACTOR |
 |---|---|---|---|
-| 1 — Estados por fecha | `8336364` | `9fdbf22` | `998cd59` |
-| 2 — Prioridad de bloqueos | `749a732` | `e7ffb9b` | `2b20f35` |
-| 3 — Cantidad y stock | `886cf74` | `b41eff1` + `7e2a57a` | `89e97c9` |
-| 4 — Estados que bloquean | `3181f10` | `8adeb61` | `778b87a` |
+| 1 — Estados por fecha | Crear pruebas de estados de vencimiento | Implementar estados de vencimiento | Refactorizar ventana de alerta |
+| 2 — Prioridad de bloqueos | Crear pruebas de prioridad de bloqueos | Implementar prioridad de bloqueos | Refactorizar textos del acuerdo |
+| 3 — Cantidad y stock | Crear pruebas de cantidad y stock | Implementar validación de cantidad y stock | Refactorizar mensajes de error |
+| 4 — Estados que bloquean | Crear pruebas de estados que bloquean | Implementar bloqueo por estado del lote | Refactorizar etiquetas de estado |
 
-La salida real de pytest de cada paso está en `tests/evidencias/`.
+La salida real de pytest de cada paso está en `tests/evidencias/`, un
+archivo por paso: `ciclo-1-red.txt`, `ciclo-1-green.txt`, y así.
 
-**Sobre el ciclo 3:** el GREEN necesitó dos commits. El primero
-(`b41eff1`) declaraba la suite en verde y no lo estaba: el mensaje de
-error empezaba con "Stock" en mayúscula y la prueba buscaba "stock",
-que distingue mayúsculas. El error quedó en el historial y se corrigió
-en `7e2a57a`, en lugar de reescribir los commits. La regla 2 del
-acuerdo pide evidencia real, y eso incluye los tropiezos.
+**Sobre el ciclo 3:** el GREEN necesitó un commit adicional
+("Corregir mensaje de stock"). La primera versión daba la suite por
+verde sin estarlo: el mensaje de error empezaba con "Stock" en
+mayúscula y la prueba buscaba "stock", que distingue mayúsculas. La
+corrección se hizo en un commit aparte y el tropiezo quedó a la vista,
+porque la regla 2 del acuerdo pide evidencia real del proceso.
 
 ## 6. Decisiones de interpretación del acuerdo
 
