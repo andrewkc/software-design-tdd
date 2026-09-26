@@ -36,7 +36,7 @@ from datetime import date, timedelta
 
 import pytest
 
-from validacion import estado_lote, validar_venta
+from src.validacion import estado_lote, validar_venta
 
 HOY = date(2026, 10, 1)
 

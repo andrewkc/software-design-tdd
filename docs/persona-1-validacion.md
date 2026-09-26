@@ -144,11 +144,18 @@ como `NORMAL` con «Fecha no aplicable», que es el caso 2.5.
 
 ## 7. Cómo correr las pruebas
 
+Desde la raíz del repositorio, igual que los demás módulos del equipo:
+
 ```bash
-pip install -r requirements.txt
-pytest
+python -m pip install pytest
+python -m pytest tests/test_validacion.py
 ```
 
 ```
 23 passed
 ```
+
+Las pruebas importan con `from src.validacion import ...`, la misma
+convención que usan los módulos de las personas 2 y 3. Por eso `src`
+lleva un `__init__.py` vacío y no hace falta ninguna configuración
+extra de pytest.

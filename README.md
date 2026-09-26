@@ -106,9 +106,11 @@ marcado como deteriorado se rechaza aunque se pase `revision_hoy=True`.
 
 ## Cómo correr las pruebas
 
+Desde la raíz del repositorio:
+
 ```bash
-pip install -r requirements.txt
-pytest
+python -m pip install pytest
+python -m pytest tests/test_validacion.py
 ```
 
 ```
