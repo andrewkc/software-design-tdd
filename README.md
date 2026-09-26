@@ -37,3 +37,23 @@ precio = precio_aplicado(1000, promocion, date(2026, 9, 27))
 ```
 
 El contrato y la evidencia del ciclo están en [docs/README.md](docs/README.md).
+
+## Ejecucion de pruebas
+
+Instalar pytest si el entorno aun no lo tiene:
+
+```bash
+python -m pip install pytest
+```
+
+Ejecutar las pruebas de persona 2:
+
+```bash
+python -m pytest tests/test_precios.py
+```
+
+Resultado verificado en esta rama:
+
+```text
+5 passed
+```
