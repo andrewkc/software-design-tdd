@@ -1,0 +1,112 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.3.4, pluggy-1.6.0 -- C:\Users\alexd\Desktop\SOFT\Proyecto\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alexd\Desktop\SOFT\Proyecto
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 10 items
+
+tests/test_validacion.py::test_fecha_lejana_es_normal_y_muestra_la_fecha PASSED [ 10%]
+tests/test_validacion.py::test_tres_dias_antes_es_proximo PASSED         [ 20%]
+tests/test_validacion.py::test_un_dia_antes_es_proximo PASSED            [ 30%]
+tests/test_validacion.py::test_vence_hoy PASSED                          [ 40%]
+tests/test_validacion.py::test_fecha_pasada_es_vencido PASSED            [ 50%]
+tests/test_validacion.py::test_lote_deteriorado_queda_bloqueado FAILED   [ 60%]
+tests/test_validacion.py::test_lote_marcado_bloqueado_queda_bloqueado FAILED [ 70%]
+tests/test_validacion.py::test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento FAILED [ 80%]
+tests/test_validacion.py::test_perecible_sin_fecha_registrada FAILED     [ 90%]
+tests/test_validacion.py::test_producto_sin_fecha_aplicable_es_normal FAILED [100%]
+
+================================== FAILURES ===================================
+____________________ test_lote_deteriorado_queda_bloqueado ____________________
+
+    def test_lote_deteriorado_queda_bloqueado():
+        estado, texto = estado_lote(
+            lote(vence=HOY + timedelta(days=10), deteriorado=True), HOY
+        )
+    
+>       assert estado == "BLOQUEADO"
+E       AssertionError: assert 'NORMAL' == 'BLOQUEADO'
+E         
+E         - BLOQUEADO
+E         + NORMAL
+
+tests\test_validacion.py:87: AssertionError
+_________________ test_lote_marcado_bloqueado_queda_bloqueado _________________
+
+    def test_lote_marcado_bloqueado_queda_bloqueado():
+        # Envase dañado o conservacion dudosa, marcado por el personal.
+        estado, texto = estado_lote(
+            lote(vence=HOY + timedelta(days=10), bloqueado=True), HOY
+        )
+    
+>       assert estado == "BLOQUEADO"
+E       AssertionError: assert 'NORMAL' == 'BLOQUEADO'
+E         
+E         - BLOQUEADO
+E         + NORMAL
+
+tests\test_validacion.py:97: AssertionError
+____________ test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento _____________
+
+    def test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento():
+        # El acuerdo da prioridad a los bloqueos por deterioro, envase o
+        # conservacion: un lote deteriorado se informa como tal aunque
+        # ademas este vencido.
+        estado, _ = estado_lote(
+            lote(vence=HOY - timedelta(days=5), deteriorado=True), HOY
+        )
+    
+>       assert estado == "BLOQUEADO"
+E       AssertionError: assert 'VENCIDO' == 'BLOQUEADO'
+E         
+E         - BLOQUEADO
+E         + VENCIDO
+
+tests\test_validacion.py:109: AssertionError
+_____________________ test_perecible_sin_fecha_registrada _____________________
+
+    def test_perecible_sin_fecha_registrada():
+>       estado, texto = estado_lote(lote(perecible=True, vence=None), HOY)
+
+tests\test_validacion.py:113: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\validacion.py:30: in estado_lote
+    dias = _dias_hasta_vencimiento(lote, fecha_actual)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': True, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
+>       return (lote["vence"] - fecha_actual).days
+E       TypeError: unsupported operand type(s) for -: 'NoneType' and 'datetime.date'
+
+src\validacion.py:26: TypeError
+_________________ test_producto_sin_fecha_aplicable_es_normal _________________
+
+    def test_producto_sin_fecha_aplicable_es_normal():
+>       estado, texto = estado_lote(lote(perecible=False, vence=None), HOY)
+
+tests\test_validacion.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\validacion.py:30: in estado_lote
+    dias = _dias_hasta_vencimiento(lote, fecha_actual)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+lote = {'bloqueado': False, 'deteriorado': False, 'id': 'L1', 'perecible': False, ...}
+fecha_actual = datetime.date(2026, 10, 1)
+
+    def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
+>       return (lote["vence"] - fecha_actual).days
+E       TypeError: unsupported operand type(s) for -: 'NoneType' and 'datetime.date'
+
+src\validacion.py:26: TypeError
+=========================== short test summary info ===========================
+FAILED tests/test_validacion.py::test_lote_deteriorado_queda_bloqueado - Asse...
+FAILED tests/test_validacion.py::test_lote_marcado_bloqueado_queda_bloqueado
+FAILED tests/test_validacion.py::test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento
+FAILED tests/test_validacion.py::test_perecible_sin_fecha_registrada - TypeEr...
+FAILED tests/test_validacion.py::test_producto_sin_fecha_aplicable_es_normal
+========================= 5 failed, 5 passed in 0.17s =========================
