@@ -1,0 +1,9 @@
+services:
+
+  # Corre la suite de pruebas sin instalar Python en la maquina:
+  #   docker compose run --rm pruebas
+  pruebas:
+    build: .
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
