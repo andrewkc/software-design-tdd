@@ -32,6 +32,10 @@ TEXTO_PROXIMO = "Vence en {dias} días: revisar lote"
 TEXTO_NORMAL = "Vence el {fecha}"
 TEXTO_FECHA_NO_APLICABLE = "Fecha no aplicable"
 
+# Mensajes de los errores que bloquean la venta.
+ERROR_CANTIDAD = "La cantidad debe ser mayor que cero"
+ERROR_STOCK = "No hay stock suficiente: el lote tiene {stock} y se piden {cantidad}"
+
 
 def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
     return (lote["vence"] - fecha_actual).days
@@ -75,10 +79,9 @@ def validar_venta(
     revision_hoy: bool = False,
 ) -> None:
     if cantidad <= 0:
-        raise ValueError("La cantidad debe ser mayor que cero")
+        raise ValueError(ERROR_CANTIDAD)
 
     if cantidad > lote["stock"]:
         raise ValueError(
-            f"No hay stock suficiente: el lote tiene {lote['stock']} "
-            f"y se piden {cantidad}"
+            ERROR_STOCK.format(stock=lote["stock"], cantidad=cantidad)
         )
