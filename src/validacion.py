@@ -35,6 +35,10 @@ TEXTO_FECHA_NO_APLICABLE = "Fecha no aplicable"
 # Mensajes de los errores que bloquean la venta.
 ERROR_CANTIDAD = "La cantidad debe ser mayor que cero"
 ERROR_STOCK = "No hay stock suficiente: el lote tiene {stock} y se piden {cantidad}"
+ERROR_ESTADO = "No se puede vender este lote. {texto}"
+ERROR_REVISION_HOY = (
+    "El lote vence hoy: se requiere la revisión del personal antes de vender"
+)
 
 
 def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
@@ -85,3 +89,11 @@ def validar_venta(
         raise ValueError(
             ERROR_STOCK.format(stock=lote["stock"], cantidad=cantidad)
         )
+
+    estado, texto = estado_lote(lote, fecha_venta)
+
+    if estado in ("BLOQUEADO", "SIN_FECHA", "VENCIDO"):
+        raise ValueError(ERROR_ESTADO.format(texto=texto))
+
+    if estado == "HOY" and not revision_hoy:
+        raise ValueError(ERROR_REVISION_HOY)
