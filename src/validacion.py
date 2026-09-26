@@ -79,5 +79,6 @@ def validar_venta(
 
     if cantidad > lote["stock"]:
         raise ValueError(
-            f"Stock insuficiente: hay {lote['stock']} y se piden {cantidad}"
+            f"No hay stock suficiente: el lote tiene {lote['stock']} "
+            f"y se piden {cantidad}"
         )
