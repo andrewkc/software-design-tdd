@@ -20,6 +20,16 @@ Ciclo 3 - validar_venta: cantidad y stock
   3.3 test_cantidad_negativa_es_rechazada
   3.4 test_cantidad_mayor_al_stock_es_rechazada
   3.5 test_cantidad_igual_al_stock_es_aceptada
+
+Ciclo 4 - validar_venta: estados que bloquean y revision del dia
+  4.1 test_lote_bloqueado_no_se_puede_vender
+  4.2 test_lote_deteriorado_no_se_puede_vender
+  4.3 test_lote_vencido_no_se_puede_vender
+  4.4 test_perecible_sin_fecha_no_se_puede_vender
+  4.5 test_vence_hoy_sin_revision_es_rechazado
+  4.6 test_vence_hoy_con_revision_es_aceptado
+  4.7 test_la_revision_no_habilita_un_lote_deteriorado
+  4.8 test_lote_proximo_a_vencer_se_puede_vender
 """
 
 from datetime import date, timedelta
@@ -159,3 +169,59 @@ def test_cantidad_mayor_al_stock_es_rechazada():
 def test_cantidad_igual_al_stock_es_aceptada():
     # Frontera: vender todo el lote es valido.
     assert validar_venta(lote_vendible(stock=5), 5, HOY) is None
+
+
+def test_lote_bloqueado_no_se_puede_vender():
+    bloqueado = lote(vence=HOY + timedelta(days=10), bloqueado=True)
+
+    with pytest.raises(ValueError, match="observación"):
+        validar_venta(bloqueado, 1, HOY)
+
+
+def test_lote_deteriorado_no_se_puede_vender():
+    deteriorado = lote(vence=HOY + timedelta(days=10), deteriorado=True)
+
+    with pytest.raises(ValueError, match="observación"):
+        validar_venta(deteriorado, 1, HOY)
+
+
+def test_lote_vencido_no_se_puede_vender():
+    vencido = lote(vence=HOY - timedelta(days=1))
+
+    with pytest.raises(ValueError, match="Vencido"):
+        validar_venta(vencido, 1, HOY)
+
+
+def test_perecible_sin_fecha_no_se_puede_vender():
+    sin_fecha = lote(perecible=True, vence=None)
+
+    with pytest.raises(ValueError, match="Fecha sin verificar"):
+        validar_venta(sin_fecha, 1, HOY)
+
+
+def test_vence_hoy_sin_revision_es_rechazado():
+    # El dia del vencimiento la venta solo procede tras la revision
+    # del personal, que aqui se registra con revision_hoy.
+    with pytest.raises(ValueError, match="revisión"):
+        validar_venta(lote(vence=HOY), 1, HOY)
+
+
+def test_vence_hoy_con_revision_es_aceptado():
+    assert validar_venta(lote(vence=HOY), 1, HOY, revision_hoy=True) is None
+
+
+def test_la_revision_no_habilita_un_lote_deteriorado():
+    # El acuerdo es explicito: si el producto presenta una señal de
+    # deterioro se bloquea aunque la fecha no haya pasado, y la
+    # confirmacion de revision no lo habilita.
+    deteriorado = lote(vence=HOY, deteriorado=True)
+
+    with pytest.raises(ValueError, match="observación"):
+        validar_venta(deteriorado, 1, HOY, revision_hoy=True)
+
+
+def test_lote_proximo_a_vencer_se_puede_vender():
+    # PROXIMO no bloquea: solo pide revisar el lote.
+    proximo = lote(vence=HOY + timedelta(days=2))
+
+    assert validar_venta(proximo, 1, HOY) is None
