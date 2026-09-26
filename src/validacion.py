@@ -21,9 +21,21 @@ DIAS_VENTANA_ALERTA = 3
 
 FORMATO_FECHA = "%d/%m/%Y"
 
-# Textos de la tabla de la seccion 3 del acuerdo. Estan juntos para
-# que una correccion de redaccion se haga en un solo lugar y no se
-# desincronice con lo que acordo el equipo.
+# Etiquetas de la tabla de la seccion 3 del acuerdo.
+BLOQUEADO = "BLOQUEADO"
+SIN_FECHA = "SIN_FECHA"
+VENCIDO = "VENCIDO"
+HOY = "HOY"
+PROXIMO = "PROXIMO"
+NORMAL = "NORMAL"
+
+# Columna "Venta" de esa misma tabla, expresada como dato.
+ESTADOS_QUE_BLOQUEAN = frozenset({BLOQUEADO, SIN_FECHA, VENCIDO})
+ESTADO_QUE_EXIGE_REVISION = HOY
+
+# Textos que ve el personal. Estan juntos para que una correccion de
+# redaccion se haga en un solo lugar y no se desincronice con lo que
+# acordo el equipo.
 TEXTO_BLOQUEADO = "En observación: revisar y retirar de la venta"
 TEXTO_SIN_FECHA = "Fecha sin verificar: revisar lote"
 TEXTO_VENCIDO = "Vencido: retirar de la venta"
@@ -52,26 +64,26 @@ def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
     del personal pesan mas que cualquier estado de fecha.
     """
     if lote["deteriorado"] or lote["bloqueado"]:
-        return "BLOQUEADO", TEXTO_BLOQUEADO
+        return BLOQUEADO, TEXTO_BLOQUEADO
 
     if lote["vence"] is None:
         if lote["perecible"]:
-            return "SIN_FECHA", TEXTO_SIN_FECHA
+            return SIN_FECHA, TEXTO_SIN_FECHA
 
-        return "NORMAL", TEXTO_FECHA_NO_APLICABLE
+        return NORMAL, TEXTO_FECHA_NO_APLICABLE
 
     dias = _dias_hasta_vencimiento(lote, fecha_actual)
 
     if dias < 0:
-        return "VENCIDO", TEXTO_VENCIDO
+        return VENCIDO, TEXTO_VENCIDO
 
     if dias == 0:
-        return "HOY", TEXTO_HOY
+        return HOY, TEXTO_HOY
 
     if dias <= DIAS_VENTANA_ALERTA:
-        return "PROXIMO", TEXTO_PROXIMO.format(dias=dias)
+        return PROXIMO, TEXTO_PROXIMO.format(dias=dias)
 
-    return "NORMAL", TEXTO_NORMAL.format(
+    return NORMAL, TEXTO_NORMAL.format(
         fecha=lote["vence"].strftime(FORMATO_FECHA)
     )
 
@@ -82,6 +94,11 @@ def validar_venta(
     fecha_venta: date,
     revision_hoy: bool = False,
 ) -> None:
+    """Deja pasar la venta o la rechaza con ValueError.
+
+    No modifica el lote ni registra nada: solo decide si la operacion
+    puede continuar.
+    """
     if cantidad <= 0:
         raise ValueError(ERROR_CANTIDAD)
 
@@ -92,8 +109,8 @@ def validar_venta(
 
     estado, texto = estado_lote(lote, fecha_venta)
 
-    if estado in ("BLOQUEADO", "SIN_FECHA", "VENCIDO"):
+    if estado in ESTADOS_QUE_BLOQUEAN:
         raise ValueError(ERROR_ESTADO.format(texto=texto))
 
-    if estado == "HOY" and not revision_hoy:
+    if estado == ESTADO_QUE_EXIGE_REVISION and not revision_hoy:
         raise ValueError(ERROR_REVISION_HOY)
