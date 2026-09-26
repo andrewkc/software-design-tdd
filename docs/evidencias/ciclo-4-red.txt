@@ -1,0 +1,9 @@
+Comando: python -m pytest -q tests/test_venta.py
+
+Resultado real antes de crear src/venta.py:
+
+E   ModuleNotFoundError: No module named 'src.venta'
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.18s
+
+Commit RED: 50dbcd3 TDD RED: add sale integration tests
