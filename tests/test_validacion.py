@@ -13,11 +13,20 @@ Ciclo 2 - estado_lote: prioridad de los bloqueos sobre la fecha
   2.3 test_el_bloqueo_tiene_prioridad_sobre_el_vencimiento
   2.4 test_perecible_sin_fecha_registrada
   2.5 test_producto_sin_fecha_aplicable_es_normal
+
+Ciclo 3 - validar_venta: cantidad y stock
+  3.1 test_venta_valida_no_lanza_error
+  3.2 test_cantidad_cero_es_rechazada
+  3.3 test_cantidad_negativa_es_rechazada
+  3.4 test_cantidad_mayor_al_stock_es_rechazada
+  3.5 test_cantidad_igual_al_stock_es_aceptada
 """
 
 from datetime import date, timedelta
 
-from validacion import estado_lote
+import pytest
+
+from validacion import estado_lote, validar_venta
 
 HOY = date(2026, 10, 1)
 
@@ -121,3 +130,32 @@ def test_producto_sin_fecha_aplicable_es_normal():
 
     assert estado == "NORMAL"
     assert texto == "Fecha no aplicable"
+
+
+def lote_vendible(stock: int = 5) -> dict:
+    """Lote sin ninguna condicion que bloquee la venta."""
+    return lote(stock=stock, vence=HOY + timedelta(days=10))
+
+
+def test_venta_valida_no_lanza_error():
+    assert validar_venta(lote_vendible(), 2, HOY) is None
+
+
+def test_cantidad_cero_es_rechazada():
+    with pytest.raises(ValueError, match="cantidad"):
+        validar_venta(lote_vendible(), 0, HOY)
+
+
+def test_cantidad_negativa_es_rechazada():
+    with pytest.raises(ValueError, match="cantidad"):
+        validar_venta(lote_vendible(), -1, HOY)
+
+
+def test_cantidad_mayor_al_stock_es_rechazada():
+    with pytest.raises(ValueError, match="stock"):
+        validar_venta(lote_vendible(stock=5), 6, HOY)
+
+
+def test_cantidad_igual_al_stock_es_aceptada():
+    # Frontera: vender todo el lote es valido.
+    assert validar_venta(lote_vendible(stock=5), 5, HOY) is None

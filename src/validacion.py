@@ -66,3 +66,12 @@ def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
     return "NORMAL", TEXTO_NORMAL.format(
         fecha=lote["vence"].strftime(FORMATO_FECHA)
     )
+
+
+def validar_venta(
+    lote: dict,
+    cantidad: int,
+    fecha_venta: date,
+    revision_hoy: bool = False,
+) -> None:
+    raise NotImplementedError("Pendiente de implementar")
