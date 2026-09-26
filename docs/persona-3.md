@@ -79,7 +79,7 @@ tests/test_movimientos.py .. [100%]
 
 ## Persona 1 - validación
 
-El módulo `src/validacion.py` y sus 23 pruebas se integraron desde `persona-1`. El detalle de los cuatro ciclos de validación y sus commits está en [persona-1-validacion.md](persona-1-validacion.md); las salidas por paso se conservan en `tests/evidencias/`.
+El módulo `src/validacion.py` y sus 23 pruebas se integraron desde `persona-1`. El detalle de los cuatro ciclos de validación y sus commits está en [persona-1.md](persona-1-validacion.md); las salidas por paso se conservan en `tests/evidencias/`.
 
 ## Persona 2 - Ciclo 4: integración
 
