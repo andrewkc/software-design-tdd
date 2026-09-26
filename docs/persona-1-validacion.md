@@ -144,7 +144,8 @@ como `NORMAL` con «Fecha no aplicable», que es el caso 2.5.
 
 ## 7. Cómo correr las pruebas
 
-Desde la raíz del repositorio, igual que los demás módulos del equipo:
+La única dependencia es pytest. Desde la raíz del repositorio, igual
+que los demás módulos del equipo:
 
 ```bash
 python -m pip install pytest

@@ -106,10 +106,16 @@ marcado como deteriorado se rechaza aunque se pase `revision_hoy=True`.
 
 ## Cómo correr las pruebas
 
-Desde la raíz del repositorio:
+La única dependencia es **pytest**. Instalarla si el entorno aún no la
+tiene:
 
 ```bash
 python -m pip install pytest
+```
+
+Ejecutar las pruebas desde la raíz del repositorio:
+
+```bash
 python -m pytest tests/test_validacion.py
 ```
 
