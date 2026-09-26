@@ -118,35 +118,32 @@ que distingue mayúsculas. El error quedó en el historial y se corrigió
 en `7e2a57a`, en lugar de reescribir los commits. La regla 2 del
 acuerdo pide evidencia real, y eso incluye los tropiezos.
 
-## 6. Cómo correr las pruebas
+## 6. Decisiones de interpretación del acuerdo
 
-Con Docker, sin instalar nada:
+Dos puntos del acuerdo admitían más de una lectura. Se resolvieron a
+favor del texto literal, para que el módulo encaje con el de los demás
+integrantes sin sorpresas.
 
-```bash
-docker compose run --rm pruebas
-```
+**El texto se respeta en singular y plural.** El acuerdo fija «Vence en
+X días», así que a un día del vencimiento el sistema muestra «Vence en
+1 días». Se mantuvo literal: el texto es un acuerdo entre tres
+personas, y cambiarlo por cuenta propia rompería las pruebas de los
+demás. La prueba 1.3 lo deja documentado.
 
-Con Python local:
+**Si hay fecha, se aplican las reglas de fecha.** El acuerdo indica que
+un producto sin fecha aplicable lleva `perecible=False` y `vence=None`,
+y también que «la fecha se muestra siempre que exista». De ahí que un
+lote con fecha registrada reciba su estado por fecha aunque
+`perecible` sea `False`. Un producto sin fecha y no perecible queda
+como `NORMAL` con «Fecha no aplicable», que es el caso 2.5.
+
+## 7. Cómo correr las pruebas
 
 ```bash
 pip install -r requirements.txt
 pytest
 ```
 
-## 7. Dudas para levantar con el equipo
-
-Dos puntos donde el acuerdo admite más de una lectura. Los implementé
-de la forma que me pareció más fiel al texto, pero convendría
-confirmarlos antes de integrar:
-
-**El texto en singular.** El acuerdo fija «Vence en X días», así que a
-un día del vencimiento el sistema muestra «Vence en 1 días». Lo dejé
-literal para no romper las pruebas de nadie, pero si el equipo prefiere
-«1 día» hay que cambiarlo en el acuerdo y en `TEXTO_PROXIMO`.
-
-**Un no perecible con fecha registrada.** El acuerdo dice que si no
-corresponde fecha se usa `perecible=False` y `vence=None`, y también
-que «la fecha se muestra siempre que exista». Interpreté que si hay
-fecha, las reglas de fecha se aplican aunque el producto no sea
-perecible. Si el equipo quiere que un no perecible nunca se marque
-`VENCIDO`, hay que decirlo explícitamente.
+```
+23 passed
+```
