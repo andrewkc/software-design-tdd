@@ -21,31 +21,48 @@ DIAS_VENTANA_ALERTA = 3
 
 FORMATO_FECHA = "%d/%m/%Y"
 
+# Textos de la tabla de la seccion 3 del acuerdo. Estan juntos para
+# que una correccion de redaccion se haga en un solo lugar y no se
+# desincronice con lo que acordo el equipo.
+TEXTO_BLOQUEADO = "En observación: revisar y retirar de la venta"
+TEXTO_SIN_FECHA = "Fecha sin verificar: revisar lote"
+TEXTO_VENCIDO = "Vencido: retirar de la venta"
+TEXTO_HOY = "Vence hoy: revisar antes de vender"
+TEXTO_PROXIMO = "Vence en {dias} días: revisar lote"
+TEXTO_NORMAL = "Vence el {fecha}"
+TEXTO_FECHA_NO_APLICABLE = "Fecha no aplicable"
+
 
 def _dias_hasta_vencimiento(lote: dict, fecha_actual: date) -> int:
     return (lote["vence"] - fecha_actual).days
 
 
 def estado_lote(lote: dict, fecha_actual: date) -> tuple[str, str]:
-    # Los bloqueos del personal tienen prioridad sobre la fecha.
+    """Etiqueta interna del lote y el texto que ve el personal.
+
+    El orden de evaluacion es el de la tabla del acuerdo: los bloqueos
+    del personal pesan mas que cualquier estado de fecha.
+    """
     if lote["deteriorado"] or lote["bloqueado"]:
-        return "BLOQUEADO", "En observación: revisar y retirar de la venta"
+        return "BLOQUEADO", TEXTO_BLOQUEADO
 
     if lote["vence"] is None:
         if lote["perecible"]:
-            return "SIN_FECHA", "Fecha sin verificar: revisar lote"
+            return "SIN_FECHA", TEXTO_SIN_FECHA
 
-        return "NORMAL", "Fecha no aplicable"
+        return "NORMAL", TEXTO_FECHA_NO_APLICABLE
 
     dias = _dias_hasta_vencimiento(lote, fecha_actual)
 
     if dias < 0:
-        return "VENCIDO", "Vencido: retirar de la venta"
+        return "VENCIDO", TEXTO_VENCIDO
 
     if dias == 0:
-        return "HOY", "Vence hoy: revisar antes de vender"
+        return "HOY", TEXTO_HOY
 
     if dias <= DIAS_VENTANA_ALERTA:
-        return "PROXIMO", f"Vence en {dias} días: revisar lote"
+        return "PROXIMO", TEXTO_PROXIMO.format(dias=dias)
 
-    return "NORMAL", f"Vence el {lote['vence'].strftime(FORMATO_FECHA)}"
+    return "NORMAL", TEXTO_NORMAL.format(
+        fecha=lote["vence"].strftime(FORMATO_FECHA)
+    )
