@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f8f3">
+    <meta
+      name="description"
+      content="Control sencillo de inventario, ventas y vencimientos para tu bodega."
+    >
+    <title>Mi Bodega | Inventario sencillo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#inicio" aria-label="Mi Bodega, inicio">
+          <span class="brand-icon" aria-hidden="true">b</span>
+          <span>mi<span class="brand-accent">bodega</span></span>
+        </a>
+        <button class="profile-button" type="button" aria-label="Perfil de Rosa">R</button>
+      </header>
+
+      <main id="inicio">
+        <section class="welcome" aria-labelledby="welcome-title">
+          <div>
+            <p class="eyebrow">MARTES, 17 DE OCTUBRE</p>
+            <h1 id="welcome-title">¡Hola, Rosa! <span aria-hidden="true">👋</span></h1>
+            <p class="welcome-copy">Así va tu negocio hoy.</p>
+          </div>
+          <div class="weather-icon" aria-hidden="true">☀️</div>
+        </section>
+
+        <section class="summary-card" aria-label="Resumen de tu inventario">
+          <div class="summary-heading">
+            <span class="summary-icon" aria-hidden="true">▦</span>
+            <span>Tu inventario</span>
+            <span class="summary-period">HOY</span>
+          </div>
+          <div class="summary-values">
+            <div>
+              <strong id="product-count">24</strong>
+              <span>productos</span>
+            </div>
+            <div class="summary-divider" aria-hidden="true"></div>
+            <div>
+              <strong id="stock-value">S/ 1,280</strong>
+              <span>en mercadería</span>
+            </div>
+          </div>
+          <div class="summary-foot">
+            <span class="status-dot" aria-hidden="true"></span>
+            Todo bajo control, revisa tus alertas
+            <span class="summary-arrow" aria-hidden="true">›</span>
+          </div>
+        </section>
+
+        <section class="expiry-card" aria-labelledby="expiry-title">
+          <div class="expiry-top">
+            <span class="expiry-icon" aria-hidden="true">!</span>
+            <span class="expiry-label">PARA REVISAR</span>
+            <span class="expiry-count" id="expiry-count">2</span>
+          </div>
+          <h2 id="expiry-title">Hay productos por vencer</h2>
+          <p class="expiry-copy">Actúa a tiempo para cuidar tu ganancia.</p>
+          <div class="expiry-product">
+            <span class="product-emoji" aria-hidden="true">🍌</span>
+            <div class="expiry-details">
+              <strong>Plátano de seda</strong>
+              <span>6 unidades · vence hoy</span>
+            </div>
+            <span class="today-tag">HOY</span>
+          </div>
+          <div class="expiry-product">
+            <span class="product-emoji" aria-hidden="true">🍪</span>
+            <div class="expiry-details">
+              <strong>Galletas de vainilla</strong>
+              <span>4 paquetes · vence en 3 días</span>
+            </div>
+            <span class="soon-tag">3 DÍAS</span>
+          </div>
+          <button class="supplier-tip" id="supplier-tip" type="button">
+            <span class="tip-icon" aria-hidden="true">↗</span>
+            <span><strong>¿Tu proveedor acepta devoluciones?</strong><br>Registra el reclamo antes del vencimiento.</span>
+            <span class="tip-arrow" aria-hidden="true">›</span>
+          </button>
+        </section>
+
+        <section class="register-section" aria-labelledby="register-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">RÁPIDO Y SIN COMPLICACIONES</p>
+              <h2 id="register-title">Agrega mercadería</h2>
+            </div>
+            <span class="sparkle" aria-hidden="true">✳</span>
+          </div>
+          <p class="section-copy">Elige cómo te queda más fácil</p>
+
+          <div class="method-grid">
+            <button class="method-card photo-card" data-mode="photo" type="button">
+              <span class="method-icon" aria-hidden="true">📷</span>
+              <span class="method-title">Toma una foto</span>
+              <span class="method-copy">A una boleta o producto</span>
+              <span class="method-action">Usar cámara <span aria-hidden="true">↗</span></span>
+            </button>
+            <button class="method-card voice-card" data-mode="voice" type="button">
+              <span class="method-icon" aria-hidden="true">🎙️</span>
+              <span class="method-title">Habla para registrar</span>
+              <span class="method-copy">Dilo y nosotros lo anotamos</span>
+              <span class="method-action">Usar voz <span aria-hidden="true">↗</span></span>
+            </button>
+            <button class="method-card write-card" data-mode="write" type="button">
+              <span class="method-icon" aria-hidden="true">✍️</span>
+              <span class="method-title">Escribe los datos</span>
+              <span class="method-copy">Simple y directo</span>
+              <span class="method-action">Escribir <span aria-hidden="true">↗</span></span>
+            </button>
+            <button class="method-card scan-card" data-mode="scan" type="button">
+              <span class="method-icon" aria-hidden="true">▦</span>
+              <span class="method-title">Escanea el código</span>
+              <span class="method-copy">Completa los datos rápido</span>
+              <span class="method-action">Escanear <span aria-hidden="true">↗</span></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="suggestion-card" aria-label="Sugerencia de precio">
+          <span class="suggestion-sparkle" aria-hidden="true">✦</span>
+          <div>
+            <p class="suggestion-label">UNA IDEA PARA HOY</p>
+            <p class="suggestion-text">Ofrece el plátano con <strong>10% de descuento</strong> para venderlo antes de que madure.</p>
+          </div>
+          <span class="suggestion-fruit" aria-hidden="true">🍌</span>
+        </section>
+
+        <section class="sales-section" aria-labelledby="sales-title">
+          <div class="section-heading sales-heading">
+            <div>
+              <p class="eyebrow">NO PIERDAS LA CUENTA</p>
+              <h2 id="sales-title">¿Vendiste algo?</h2>
+            </div>
+            <span class="sales-icon" aria-hidden="true">🛍️</span>
+          </div>
+          <p class="section-copy">Registra la venta y actualiza tu stock al instante.</p>
+          <button class="sale-button" id="sale-button" type="button">
+            <span aria-hidden="true">＋</span> Registrar una venta
+          </button>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Navegación principal">
+        <a class="nav-item active" href="#inicio" aria-current="page">
+          <span aria-hidden="true">⌂</span><span>Inicio</span>
+        </a>
+        <button class="nav-item" id="inventory-nav" type="button">
+          <span aria-hidden="true">▦</span><span>Inventario</span>
+        </button>
+        <button class="nav-item" id="sales-nav" type="button">
+          <span aria-hidden="true">↗</span><span>Ventas</span>
+        </button>
+        <button class="nav-item" id="profile-nav" type="button">
+          <span aria-hidden="true">☺</span><span>Perfil</span>
+        </button>
+      </nav>
+    </div>
+
+    <dialog class="action-dialog" id="action-dialog" aria-labelledby="dialog-title">
+      <form class="dialog-content" id="action-form">
+        <button class="dialog-close" id="dialog-close" type="button" aria-label="Cerrar">×</button>
+        <p class="eyebrow" id="dialog-eyebrow">NUEVO PRODUCTO</p>
+        <h2 id="dialog-title">Agrega mercadería</h2>
+        <p class="dialog-copy" id="dialog-copy">Anota lo básico, puedes completar el resto después.</p>
+        <label class="field-label" for="product-name">Nombre del producto</label>
+        <input id="product-name" name="productName" placeholder="Ej. Leche evaporada" required>
+        <div class="field-row">
+          <div>
+            <label class="field-label" for="product-quantity">Cantidad</label>
+            <input id="product-quantity" name="quantity" type="number" min="1" value="1" required>
+          </div>
+          <div>
+            <label class="field-label" for="product-expiry">Vence el</label>
+            <input id="product-expiry" name="expiry" type="date">
+          </div>
+        </div>
+        <label class="field-label" for="product-supplier">Proveedor <span class="optional">(opcional)</span></label>
+        <input id="product-supplier" name="supplier" placeholder="Ej. Distribuidora San José">
+        <label class="field-label" for="product-code" id="code-label" hidden>Código de barras</label>
+        <input id="product-code" name="code" placeholder="Escanea o escribe el código" hidden>
+        <input id="photo-input" type="file" accept="image/*" capture="environment" hidden>
+        <button class="submit-button" type="submit" id="submit-button">Guardar producto</button>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
