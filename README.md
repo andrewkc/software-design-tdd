@@ -12,7 +12,7 @@ Trabajo del Grupo 2 del curso Diseño de Software. Aplicamos **Test-Driven Devel
 
 Antes de registrar una salida por venta comprobamos la cantidad solicitada, el stock y el estado del lote. Después seleccionamos el precio regular o una promoción aprobada y vigente. La operación devuelve un lote nuevo con el stock reducido una sola vez y un movimiento con responsable, cantidad, precio y total. Si la validación falla, el lote original permanece intacto.
 
-Esta implementación es una demostración en memoria de una venta de un producto desde un lote. No incluye base de datos, múltiples productos o lotes por venta, permisos, concurrencia, cancelaciones ni mermas. No cubre todo CU-05.
+La lógica de venta funciona en memoria. Opcionalmente, un adaptador SQLite guarda el lote actualizado y el movimiento. No incluye múltiples productos o lotes por venta, permisos, cancelaciones ni mermas. No cubre todo CU-05.
 
 ## Metodología y tecnologías
 
@@ -24,6 +24,9 @@ Usamos Python 3.10 o superior, pytest y Git. Organizamos el trabajo en ciclos **
 | `src/precios.py` | Seleccionar el precio aplicable. |
 | `src/movimientos.py` | Devolver el nuevo lote y el movimiento de salida. |
 | `src/venta.py` | Ejecutar validación, precio y movimiento en ese orden. |
+| `src/repositorio_ventas.py` | Definir el contrato de persistencia, sin importar una base de datos. |
+| `src/venta_aplicacion.py` | Coordinar la venta con cualquier repositorio que cumpla el contrato. |
+| `src/infraestructura/sqlite_ventas.py` | Guardar lotes y movimientos en SQLite de forma transaccional. |
 
 Las fechas son objetos `datetime.date` y los importes son enteros en centavos. `1000` representa S/ 10,00. El [contrato técnico](docs/contrato.md) reúne las entradas, salidas y reglas compartidas.
 
@@ -49,13 +52,35 @@ python demo.py
 
 En la primera operación el stock pasa de 5 a 3 y el total es S/ 16,00. En la segunda se muestra el motivo del rechazo y el stock sigue en 5.
 
+## Separación de la base de datos
+
+`registrar_venta` y las reglas de negocio no importan SQLite. La aplicación depende del contrato `RepositorioVentas`; solo el adaptador en `src/infraestructura/` conoce el esquema y las consultas SQL. Para usar SQLite:
+
+```python
+import sqlite3
+from datetime import date
+
+from src.infraestructura.sqlite_ventas import RepositorioVentasSQLite, crear_esquema
+from src.venta_aplicacion import registrar_venta_persistida
+
+conexion = sqlite3.connect("ventas.db")
+crear_esquema(conexion)
+# Registrar primero el lote en la tabla lotes y confirmar esa transacción.
+nuevo_lote, movimiento = registrar_venta_persistida(
+    RepositorioVentasSQLite(conexion), "L1", 2, date(2026, 9, 27),
+    1000, None, "Ana",
+)
+```
+
+El adaptador abre una transacción para leer el lote, aplicar las reglas y guardar ambos resultados; si la venta falla, revierte la transacción. La conexión debe estar libre de una transacción activa al llamar a `registrar_venta_persistida`.
+
 ## Pruebas
 
 ```powershell
 python -m pytest -p no:cacheprovider -q
 ```
 
-La suite integrada contiene **34 pruebas**: 23 de validación, 5 de precios, 2 de movimientos y 4 de integración. Incluye casos normales, límites y errores. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
+La suite integrada contiene **38 pruebas**: 23 de validación, 5 de precios, 2 de movimientos, 4 de integración y 4 de persistencia. Incluye casos normales, límites y errores. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
 
 ## Documentación y evidencias
 
