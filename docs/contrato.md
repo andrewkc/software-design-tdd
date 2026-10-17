@@ -2,7 +2,7 @@
 
 ## Funcionalidad
 
-Implementamos una parte de CU-05: registrar la salida por venta de un producto desde un lote. La venta se ejecuta en memoria y devuelve el lote actualizado y el movimiento generado. El orden del proceso es **validar → elegir precio → crear movimiento**.
+Implementamos una parte de CU-05: registrar la salida por venta de un producto desde un lote. La lógica de venta se ejecuta en memoria y devuelve el lote actualizado y el movimiento generado. El orden del proceso es **validar → elegir precio → crear movimiento**. La persistencia opcional en PostgreSQL se realiza fuera de esta lógica.
 
 ## Representación compartida
 
@@ -40,6 +40,7 @@ Para un producto sin fecha de vencimiento aplicable usamos `perecible=False` y `
 | `precio_aplicado(precio_regular_centavos, promocion, fecha_venta)` | Devuelve el precio promocional solo cuando la promoción existe, está aprobada y activa, y `inicio <= fecha_venta <= fin`; en otro caso devuelve el regular. |
 | `crear_movimiento(lote, cantidad, precio_unitario_centavos, responsable)` | Recibe una venta ya validada. Devuelve `(nuevo_lote, movimiento)` sin modificar el lote original. El movimiento guarda `motivo="venta"`, `lote_id`, `cantidad`, `responsable`, `precio_unitario_centavos` y `total_centavos`. |
 | `registrar_venta(lote, cantidad, fecha_venta, precio_regular_centavos, promocion, responsable, revision_hoy=False)` | Llama a validación, precio y movimiento en ese orden y devuelve `(nuevo_lote, movimiento)`. Una validación fallida detiene la operación antes de crear el movimiento. |
+| `registrar_venta_persistida(repositorio, lote_id, ...)` | Obtiene y bloquea el lote mediante el repositorio, aplica `registrar_venta` y guarda lote y movimiento en una transacción. |
 
 La fecha de vencimiento es el último día permitido en esta demostración, siempre que el personal haya realizado la revisión y se pase `revision_hoy=True`. Esa marca registra una acción humana; no certifica la inocuidad del producto. Un lote deteriorado o bloqueado se rechaza incluso con esa marca. La ventana informativa de proximidad es de tres días y no modifica estas reglas de venta.
 
@@ -49,4 +50,4 @@ Con stock inicial de 5, cantidad 2 y promoción vigente de 800 centavos por unid
 
 ## Límites
 
-El contrato supone que los datos de la promoción aprobada son válidos: precio positivo, inferior al regular y fechas ordenadas. No implementamos persistencia, varias líneas de venta, permisos, revalidación frente a concurrencia, cancelaciones, mermas ni sugerencias de IA.
+El contrato supone que los datos de la promoción aprobada son válidos: precio positivo, inferior al regular y fechas ordenadas. La persistencia PostgreSQL bloquea el lote durante la venta; no implementamos varias líneas de venta, permisos, cancelaciones, mermas ni sugerencias de IA.

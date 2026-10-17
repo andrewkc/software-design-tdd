@@ -12,11 +12,11 @@ Trabajo del Grupo 2 del curso Diseño de Software. Aplicamos **Test-Driven Devel
 
 Antes de registrar una salida por venta comprobamos la cantidad solicitada, el stock y el estado del lote. Después seleccionamos el precio regular o una promoción aprobada y vigente. La operación devuelve un lote nuevo con el stock reducido una sola vez y un movimiento con responsable, cantidad, precio y total. Si la validación falla, el lote original permanece intacto.
 
-La lógica de venta funciona en memoria. Opcionalmente, un adaptador SQLite guarda el lote actualizado y el movimiento. No incluye múltiples productos o lotes por venta, permisos, cancelaciones ni mermas. No cubre todo CU-05.
+La lógica de venta funciona en memoria. Un adaptador PostgreSQL separado guarda el lote actualizado y el movimiento cuando se necesita persistencia. No incluye múltiples productos o lotes por venta, permisos, cancelaciones ni mermas. No cubre todo CU-05.
 
 ## Metodología y tecnologías
 
-Usamos Python 3.10 o superior, pytest y Git. Organizamos el trabajo en ciclos **RED → GREEN → REFACTOR**: primero definimos un comportamiento mediante una prueba, después escribimos el código necesario para pasarla y finalmente mejoramos el diseño con la suite en verde. Los cuatro módulos separan validación, selección de precio, movimiento e integración.
+Usamos Python 3.10 o superior, pytest, PostgreSQL, Docker Compose y Git. Organizamos el trabajo en ciclos **RED → GREEN → REFACTOR**: primero definimos un comportamiento mediante una prueba, después escribimos el código necesario para pasarla y finalmente mejoramos el diseño con la suite en verde. Los cuatro módulos de negocio separan validación, selección de precio, movimiento e integración.
 
 | Módulo | Responsabilidad |
 | --- | --- |
@@ -26,7 +26,8 @@ Usamos Python 3.10 o superior, pytest y Git. Organizamos el trabajo en ciclos **
 | `src/venta.py` | Ejecutar validación, precio y movimiento en ese orden. |
 | `src/repositorio_ventas.py` | Definir el contrato de persistencia, sin importar una base de datos. |
 | `src/venta_aplicacion.py` | Coordinar la venta con cualquier repositorio que cumpla el contrato. |
-| `src/infraestructura/sqlite_ventas.py` | Guardar lotes y movimientos en SQLite de forma transaccional. |
+| `src/infraestructura/postgres_ventas.py` | Guardar lotes y movimientos en PostgreSQL de forma transaccional. |
+| `db/schema.sql` | Definir las tablas, separado del código de negocio. |
 
 Las fechas son objetos `datetime.date` y los importes son enteros en centavos. `1000` representa S/ 10,00. El [contrato técnico](docs/contrato.md) reúne las entradas, salidas y reglas compartidas.
 
@@ -54,25 +55,36 @@ En la primera operación el stock pasa de 5 a 3 y el total es S/ 16,00. En la se
 
 ## Separación de la base de datos
 
-`registrar_venta` y las reglas de negocio no importan SQLite. La aplicación depende del contrato `RepositorioVentas`; solo el adaptador en `src/infraestructura/` conoce el esquema y las consultas SQL. Para usar SQLite:
+`registrar_venta` y las reglas de negocio no importan PostgreSQL. La aplicación depende del contrato `RepositorioVentas`; solo el adaptador en `src/infraestructura/` conoce las consultas SQL. Docker Compose inicia PostgreSQL y ejecuta `db/schema.sql` al crear el volumen por primera vez:
 
-```python
-import sqlite3
-from datetime import date
-
-from src.infraestructura.sqlite_ventas import RepositorioVentasSQLite, crear_esquema
-from src.venta_aplicacion import registrar_venta_persistida
-
-conexion = sqlite3.connect("ventas.db")
-crear_esquema(conexion)
-# Registrar primero el lote en la tabla lotes y confirmar esa transacción.
-nuevo_lote, movimiento = registrar_venta_persistida(
-    RepositorioVentasSQLite(conexion), "L1", 2, date(2026, 9, 27),
-    1000, None, "Ana",
-)
+```powershell
+docker compose up -d --wait
 ```
 
-El adaptador abre una transacción para leer el lote, aplicar las reglas y guardar ambos resultados; si la venta falla, revierte la transacción. La conexión debe estar libre de una transacción activa al llamar a `registrar_venta_persistida`.
+La base queda disponible en `127.0.0.1:5434` (puerto configurable con `POSTGRES_HOST_PORT`). Para registrar una venta persistida:
+
+```python
+import psycopg
+from datetime import date
+
+from src.infraestructura.postgres_ventas import RepositorioVentasPostgres
+from src.venta_aplicacion import registrar_venta_persistida
+
+with psycopg.connect(
+    "postgresql://bodegas:bodegas@127.0.0.1:5434/bodegas", autocommit=True
+) as conexion:
+    conexion.execute(
+        "INSERT INTO lotes (id, stock, perecible, vence, deteriorado, bloqueado) "
+        "VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (id) DO NOTHING",
+        ("L1", 5, True, date(2026, 10, 1), False, False),
+    )
+    nuevo_lote, movimiento = registrar_venta_persistida(
+        RepositorioVentasPostgres(conexion), "L1", 2, date(2026, 9, 27),
+        1000, None, "Ana",
+    )
+```
+
+El adaptador bloquea el lote durante la transacción, aplica las reglas y guarda ambos resultados; si la venta falla, revierte la transacción. La conexión debe crearse con `autocommit=True`. El esquema se inicializa solo en un volumen vacío de Docker.
 
 ## Pruebas
 
@@ -80,7 +92,14 @@ El adaptador abre una transacción para leer el lote, aplicar las reglas y guard
 python -m pytest -p no:cacheprovider -q
 ```
 
-La suite integrada contiene **38 pruebas**: 23 de validación, 5 de precios, 2 de movimientos, 4 de integración y 4 de persistencia. Incluye casos normales, límites y errores. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
+Para incluir las tres pruebas de integración con PostgreSQL, inicia Docker Compose y configura la conexión de pruebas antes de ejecutar el comando:
+
+```powershell
+$env:TEST_DATABASE_URL = "postgresql://bodegas:bodegas@127.0.0.1:5434/bodegas"
+python -m pytest -p no:cacheprovider -q
+```
+
+La suite contiene **38 pruebas**: 23 de validación, 5 de precios, 2 de movimientos, 4 de integración y 4 de persistencia. Las tres pruebas que requieren PostgreSQL se omiten si `TEST_DATABASE_URL` no está configurada. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
 
 ## Documentación y evidencias
 
