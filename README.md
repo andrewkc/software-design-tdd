@@ -1,6 +1,6 @@
-# TDD aplicado al registro de ventas en bodegas
+# TDD aplicado a ventas y empleados de bodegas
 
-Trabajo del Grupo 2 del curso Diseño de Software. Aplicamos **Test-Driven Development (TDD)** a una parte de CU-05 del proyecto de bodegas: confirmar la venta de un producto desde un lote.
+Trabajo del Grupo 2 del curso Diseño de Software. Aplicamos **Test-Driven Development (TDD)** a una parte de CU-05 (venta desde un lote) y a CU-03 (asignación de empleados a una bodega).
 
 ## Integrantes
 
@@ -28,6 +28,10 @@ Usamos Python 3.10 o superior, pytest, PostgreSQL, Docker Compose y Git. Organiz
 | `src/venta_aplicacion.py` | Coordinar la venta con cualquier repositorio que cumpla el contrato. |
 | `src/infraestructura/postgres_ventas.py` | Guardar lotes y movimientos en PostgreSQL de forma transaccional. |
 | `db/schema.sql` | Definir las tablas, separado del código de negocio. |
+| `src/empleados.py` | Validar incorporación y retiro de empleados sin acceder a PostgreSQL. |
+| `src/empleados_aplicacion.py` | Incorporar, listar y retirar empleados mediante un repositorio. |
+| `src/infraestructura/postgres_empleados.py` | Aplicar CU-03 sobre las cuentas de PostgreSQL en una transacción. |
+| `db/002_cu03.sql` | Crear bodegas y cuentas necesarias para CU-03. |
 
 Las fechas son objetos `datetime.date` y los importes son enteros en centavos. `1000` representa S/ 10,00. El [contrato técnico](docs/contrato.md) reúne las entradas, salidas y reglas compartidas.
 
@@ -86,6 +90,36 @@ with psycopg.connect(
 
 El adaptador bloquea el lote durante la transacción, aplica las reglas y guarda ambos resultados; si la venta falla, revierte la transacción. La conexión debe crearse con `autocommit=True`. El esquema se inicializa solo en un volumen vacío de Docker.
 
+## CU-03 Gestión de empleados
+
+CU-03 trabaja con cuentas de empleado ya existentes, como indica su precondición. El jefe activo puede consultar los empleados de su bodega, incorporar una cuenta activa sin asignación o retirar una cuenta de su bodega. Retirar elimina la asignación, conserva la cuenta y no borra los movimientos anteriores. La base impide que una cuenta esté asignada a dos bodegas a la vez.
+
+En una base nueva, Docker Compose ejecuta `db/002_cu03.sql` al iniciar el volumen. Si ya existe un volumen creado antes de incorporar CU-03, aplica la migración una vez con este comando; es repetible:
+
+```powershell
+docker compose up -d --wait
+docker compose exec -T db psql -U bodegas -d bodegas -v ON_ERROR_STOP=1 -f /docker-entrypoint-initdb.d/02-cu03.sql
+```
+
+Con una bodega, un jefe asignado y una cuenta de empleado ya registrados, el uso desde Python es:
+
+```python
+import psycopg
+
+from src.empleados_aplicacion import incorporar_empleado, listar_empleados, retirar_empleado
+from src.infraestructura.postgres_empleados import RepositorioEmpleadosPostgres
+
+with psycopg.connect(
+    "postgresql://bodegas:bodegas@127.0.0.1:5434/bodegas", autocommit=True
+) as conexion:
+    repositorio = RepositorioEmpleadosPostgres(conexion)
+    incorporar_empleado(repositorio, "jefe_1", "empleado_1")
+    empleados = listar_empleados(repositorio, "jefe_1")
+    retirar_empleado(repositorio, "jefe_1", "empleado_1")
+```
+
+CU-01 todavía no crea las cuentas desde la aplicación y el proyecto aún no tiene pantalla ni inicio de sesión. Las funciones de CU-03 reciben el identificador de un jefe existente y verifican su rol, estado y bodega en PostgreSQL.
+
 ## Pruebas
 
 ```powershell
@@ -99,7 +133,7 @@ $env:TEST_DATABASE_URL = "postgresql://bodegas:bodegas@127.0.0.1:5434/bodegas"
 python -m pytest -p no:cacheprovider -q
 ```
 
-La suite contiene **38 pruebas**: 23 de validación, 5 de precios, 2 de movimientos, 4 de integración y 4 de persistencia. Las tres pruebas que requieren PostgreSQL se omiten si `TEST_DATABASE_URL` no está configurada. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
+La suite contiene **55 pruebas**: las 38 existentes y 17 de CU-03. Ocho pruebas de integración requieren PostgreSQL y se omiten si `TEST_DATABASE_URL` no está configurada. El comando `-p no:cacheprovider` evita crear archivos de caché; no cambia las pruebas.
 
 ## Documentación y evidencias
 
